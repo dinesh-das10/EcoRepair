@@ -4,6 +4,10 @@
 
 EcoRepair is a web application that helps users decide whether a faulty electronic device may be worth repairing or should be sent for responsible e-waste disposal.
 
+## 🚀 Live Demo
+
+[Open EcoRepair](https://ecorepair-frontend.onrender.com)
+
 ### How it works
 
 1. User selects a device and describes the problem.
