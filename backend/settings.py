@@ -133,6 +133,7 @@ MAILERS = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://ecorepair-frontend.onrender.com",
 ]
 
 STATIC_URL = "static/"
