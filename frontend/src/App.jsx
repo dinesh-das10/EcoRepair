@@ -64,7 +64,7 @@ function App() {
 
   try {
     const response = await fetch(
-      "http://127.0.0.1:8000/api/repair/process/",
+      "https://ecorepair-backend.onrender.com/api/repair/process/",
       {
         method: "POST",
         headers: {
@@ -115,7 +115,7 @@ const findEwasteCenter = async () => {
 
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/collection/nearest/",
+          "https://ecorepair-backend.onrender.com/api/collection/nearest/",
           {
             method: "POST",
             headers: {
