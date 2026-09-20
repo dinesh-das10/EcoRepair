@@ -1,194 +1,122 @@
 from django.core.management.base import BaseCommand
 from repair.models import FaultPattern
 
+FAULT_PATTERNS = [
+    {'category': 'mobile', 'symptom': 'phone battery drains very quickly even with light use', 'verdict': 'repairable', 'reason': 'A worn battery or background power issue may be causing excessive battery drain.', 'difficulty': 'professional', 'repair_guide': 'Check battery health and background apps. If battery health is poor, have the battery replaced.'},
+    {'category': 'mobile', 'symptom': 'phone does not charge when connected to a cable', 'verdict': 'repairable', 'reason': 'The charging port, cable, charger, or charging circuit may be faulty.', 'difficulty': 'professional', 'repair_guide': 'Try a known-good charger and cable and inspect the port for debris. If the problem remains, get the charging port or circuit checked.'},
+    {'category': 'mobile', 'symptom': 'phone charges only when the cable is held at an angle', 'verdict': 'repairable', 'reason': 'A loose or damaged charging port is a common cause of intermittent charging.', 'difficulty': 'professional', 'repair_guide': 'Avoid forcing the cable. Have the charging port inspected and replaced if necessary.'},
+    {'category': 'mobile', 'symptom': 'phone screen is cracked but touch still works', 'verdict': 'repairable', 'reason': 'The display assembly can usually be replaced when the rest of the phone is functioning.', 'difficulty': 'professional', 'repair_guide': 'Back up your data and have the display assembly assessed by a repair professional.'},
+    {'category': 'mobile', 'symptom': 'phone screen has black spots and lines after being dropped', 'verdict': 'repairable', 'reason': 'Impact damage can affect the display panel even when the phone still powers on.', 'difficulty': 'professional', 'repair_guide': 'Back up your data if possible and have the display assembly inspected.'},
+    {'category': 'mobile', 'symptom': 'phone gets unusually hot during normal use', 'verdict': 'repairable', 'reason': 'Overheating can be caused by a failing battery, blocked cooling, software activity, or a hardware fault.', 'difficulty': 'professional', 'repair_guide': 'Check for unusually demanding apps and battery swelling. If overheating continues, stop heavy use and seek professional inspection.'},
+    {'category': 'mobile', 'symptom': 'phone speaker sounds distorted or very quiet', 'verdict': 'repairable', 'reason': 'The speaker grille may be blocked or the speaker component may be damaged.', 'difficulty': 'diy', 'repair_guide': 'Clean the speaker area gently without inserting sharp objects. If distortion remains, the speaker may need replacement.'},
+    {'category': 'mobile', 'symptom': 'phone microphone is not working during calls', 'verdict': 'repairable', 'reason': 'The microphone opening may be blocked or the microphone hardware may be faulty.', 'difficulty': 'professional', 'repair_guide': 'Check microphone permissions and gently clean the opening. Seek repair if the issue persists.'},
+    {'category': 'mobile', 'symptom': 'phone camera has become blurry and will not focus', 'verdict': 'repairable', 'reason': 'A dirty lens, software issue, or damaged camera module can cause focusing problems.', 'difficulty': 'diy', 'repair_guide': 'Clean the camera lens and restart the phone. If focusing remains faulty, have the camera module checked.'},
+    {'category': 'mobile', 'symptom': 'phone keeps restarting by itself', 'verdict': 'repairable', 'reason': 'Unexpected restarts can result from software problems, battery faults, or other hardware issues.', 'difficulty': 'professional', 'repair_guide': 'Install available updates and check storage space. If restarts continue, get the device professionally diagnosed.'},
+    {'category': 'mobile', 'symptom': 'phone buttons are stuck or difficult to press', 'verdict': 'repairable', 'reason': 'Physical button mechanisms can wear out or become obstructed by dirt or impact damage.', 'difficulty': 'professional', 'repair_guide': 'Do not force the button. Have the button mechanism inspected and cleaned or replaced.'},
+    {'category': 'mobile', 'symptom': 'phone has water damage but still turns on', 'verdict': 'uncertain', 'reason': 'Liquid damage can affect internal components over time and the extent of damage cannot be determined from symptoms alone.', 'difficulty': 'professional', 'repair_guide': 'Power the phone off, do not charge it, and have it inspected by a repair professional as soon as possible.'},
+    {'category': 'mobile', 'symptom': 'phone is completely dead and repair cost is very high', 'verdict': 'not_economical', 'reason': 'A completely dead phone with an expensive suspected repair may cost more to fix than replacing it.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'mobile', 'symptom': 'phone has severe internal damage after a major impact', 'verdict': 'uncertain', 'reason': 'Multiple damaged internal components may be involved and the repairability cannot be determined without inspection.', 'difficulty': 'professional', 'repair_guide': 'Back up data if possible and get a diagnostic assessment before deciding whether to repair or replace it.'},
+    {'category': 'mobile', 'symptom': 'phone storage is full and apps have become slow', 'verdict': 'repairable', 'reason': 'Performance problems caused by insufficient storage can often be improved without replacing hardware.', 'difficulty': 'diy', 'repair_guide': 'Back up important files, remove unused apps and media, and keep sufficient free storage available.'},
+    {'category': 'laptop', 'symptom': 'laptop gets very hot and suddenly shuts down', 'verdict': 'repairable', 'reason': 'Overheating may be caused by blocked airflow, dust buildup, or a cooling system problem.', 'difficulty': 'professional', 'repair_guide': 'Keep vents clear and have the cooling system cleaned and checked if shutdowns continue.'},
+    {'category': 'laptop', 'symptom': 'laptop battery drains very quickly', 'verdict': 'repairable', 'reason': 'Battery degradation is common in older laptops and can cause short battery life.', 'difficulty': 'professional', 'repair_guide': 'Check battery health and replace the battery if its capacity has significantly degraded.'},
+    {'category': 'laptop', 'symptom': 'laptop does not charge but works on the charger', 'verdict': 'repairable', 'reason': 'The battery, charging port, charger, or charging circuit may be faulty.', 'difficulty': 'professional', 'repair_guide': 'Test with the correct charger and check battery health. Have the charging system inspected if the issue persists.'},
+    {'category': 'laptop', 'symptom': 'laptop screen flickers when the lid is moved', 'verdict': 'repairable', 'reason': 'A damaged display cable or hinge connection can cause flickering when the lid moves.', 'difficulty': 'professional', 'repair_guide': 'Avoid repeatedly flexing the lid and have the display cable and hinge area inspected.'},
+    {'category': 'laptop', 'symptom': 'laptop screen is cracked but the computer still works', 'verdict': 'repairable', 'reason': 'A damaged display panel can usually be replaced independently of the main computer hardware.', 'difficulty': 'professional', 'repair_guide': 'Back up your data and have the display panel replaced if repair cost is reasonable.'},
+    {'category': 'laptop', 'symptom': 'laptop is extremely slow after starting', 'verdict': 'repairable', 'reason': 'Slow performance can be caused by limited storage, startup programs, memory pressure, or an aging drive.', 'difficulty': 'diy', 'repair_guide': 'Remove unnecessary startup programs, free storage, update the system, and consider an SSD or memory upgrade where supported.'},
+    {'category': 'laptop', 'symptom': 'laptop fan makes a loud grinding noise', 'verdict': 'repairable', 'reason': 'A worn or obstructed cooling fan can produce unusual mechanical noise.', 'difficulty': 'professional', 'repair_guide': 'Have the fan cleaned and inspected. Replace it if the bearing or motor is damaged.'},
+    {'category': 'laptop', 'symptom': 'keyboard has several keys that do not work', 'verdict': 'repairable', 'reason': 'Keyboard faults can result from debris, liquid exposure, or a damaged keyboard assembly.', 'difficulty': 'professional', 'repair_guide': 'If cleaning does not help, have the keyboard and its connection inspected.'},
+    {'category': 'laptop', 'symptom': 'laptop touchpad stopped responding', 'verdict': 'repairable', 'reason': 'Touchpad settings, drivers, or the touchpad hardware may be responsible.', 'difficulty': 'diy', 'repair_guide': 'Check touchpad settings and drivers first. If it remains unresponsive, have the hardware connection inspected.'},
+    {'category': 'laptop', 'symptom': 'laptop has no sound from built-in speakers', 'verdict': 'repairable', 'reason': 'Audio settings, drivers, speakers, or the audio hardware can cause this problem.', 'difficulty': 'diy', 'repair_guide': 'Check volume, output device, and audio drivers. If software checks fail, have the speaker hardware inspected.'},
+    {'category': 'laptop', 'symptom': 'laptop randomly freezes during normal use', 'verdict': 'repairable', 'reason': 'Freezing may be related to storage, memory, drivers, overheating, or operating-system problems.', 'difficulty': 'professional', 'repair_guide': 'Check temperatures and storage health and update drivers. Seek diagnosis if freezing continues.'},
+    {'category': 'laptop', 'symptom': 'laptop USB port does not detect devices', 'verdict': 'repairable', 'reason': 'The USB port may have a driver, connection, or physical hardware issue.', 'difficulty': 'professional', 'repair_guide': 'Test another USB device and port. If one port consistently fails, have the connector inspected.'},
+    {'category': 'laptop', 'symptom': 'laptop is very old and has multiple major hardware problems', 'verdict': 'not_economical', 'reason': 'Several major faults in an old laptop can make cumulative repair costs higher than replacement.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'laptop', 'symptom': 'laptop shows a black screen but power lights are on', 'verdict': 'uncertain', 'reason': 'The problem may involve the display, memory, graphics system, or another internal component.', 'difficulty': 'professional', 'repair_guide': 'Try an external display if available and seek professional diagnosis if the internal screen remains blank.'},
+    {'category': 'laptop', 'symptom': 'laptop charger becomes unusually hot and charging is intermittent', 'verdict': 'repairable', 'reason': 'A damaged charger, connector, or charging circuit may be causing unstable power delivery.', 'difficulty': 'professional', 'repair_guide': 'Stop using a damaged or overheating charger and have the charger and charging port checked.'},
+    {'category': 'fan', 'symptom': 'fan does not start when switched on', 'verdict': 'repairable', 'reason': 'The issue may involve the switch, capacitor, wiring, or motor.', 'difficulty': 'professional', 'repair_guide': 'Disconnect power before inspection. A technician can test the capacitor, wiring, and motor.'},
+    {'category': 'fan', 'symptom': 'fan runs very slowly even at the highest speed', 'verdict': 'repairable', 'reason': 'A weak capacitor, motor issue, or mechanical resistance can reduce fan speed.', 'difficulty': 'professional', 'repair_guide': 'Have the capacitor and motor checked and clean the fan blades and moving parts.'},
+    {'category': 'fan', 'symptom': 'fan makes a rattling noise while rotating', 'verdict': 'repairable', 'reason': 'Loose parts, worn bearings, or blade imbalance can create rattling sounds.', 'difficulty': 'professional', 'repair_guide': 'Switch off power and check for loose external parts. Have the motor and bearings inspected if needed.'},
+    {'category': 'fan', 'symptom': 'fan makes a humming sound but blades do not spin', 'verdict': 'repairable', 'reason': 'A failed capacitor or motor problem can cause the motor to hum without starting.', 'difficulty': 'professional', 'repair_guide': 'Do not keep running the fan in this state. Have the capacitor and motor checked.'},
+    {'category': 'fan', 'symptom': 'ceiling fan shakes heavily while running', 'verdict': 'repairable', 'reason': 'An unbalanced blade, loose mounting, or damaged component may cause excessive vibration.', 'difficulty': 'professional', 'repair_guide': 'Stop using the fan if vibration is severe and have the mounting and blades checked.'},
+    {'category': 'fan', 'symptom': 'fan speed changes randomly', 'verdict': 'repairable', 'reason': 'A faulty regulator, capacitor, or electrical connection may cause unstable speed.', 'difficulty': 'professional', 'repair_guide': 'Have the regulator and electrical connections tested by a qualified technician.'},
+    {'category': 'fan', 'symptom': 'fan smells slightly burnt after running', 'verdict': 'uncertain', 'reason': 'A burning smell can indicate overheating wiring, insulation, or motor components and needs inspection.', 'difficulty': 'professional', 'repair_guide': 'Switch off and unplug the fan. Do not continue using it until the source of the smell is checked.'},
+    {'category': 'fan', 'symptom': 'fan blades are difficult to turn by hand when powered off', 'verdict': 'repairable', 'reason': 'Mechanical resistance can indicate dry bearings, obstruction, or motor problems.', 'difficulty': 'professional', 'repair_guide': 'Have the moving assembly and motor inspected and serviced.'},
+    {'category': 'fan', 'symptom': 'fan remote control no longer changes speed', 'verdict': 'repairable', 'reason': 'The remote, batteries, receiver, or control board may be responsible.', 'difficulty': 'diy', 'repair_guide': 'Replace the remote batteries and test the controls. If the issue remains, inspect the receiver and controller.'},
+    {'category': 'fan', 'symptom': 'fan is completely burnt out and the motor replacement costs almost as much as a new fan', 'verdict': 'not_economical', 'reason': 'When the motor replacement approaches the cost of a replacement fan, repair may not be economically worthwhile.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'mixer', 'symptom': 'mixer grinder does not start when switched on', 'verdict': 'repairable', 'reason': 'The switch, power connection, motor, or internal protection circuit may be faulty.', 'difficulty': 'professional', 'repair_guide': 'Unplug the appliance and have the switch, motor, and wiring checked.'},
+    {'category': 'mixer', 'symptom': 'mixer makes a loud noise but blades do not rotate', 'verdict': 'repairable', 'reason': 'A worn coupling, jammed blade assembly, or motor issue may prevent rotation.', 'difficulty': 'professional', 'repair_guide': 'Unplug the mixer before checking the jar and coupling. Replace worn components if necessary.'},
+    {'category': 'mixer', 'symptom': 'mixer smells burnt during operation', 'verdict': 'uncertain', 'reason': 'A burning smell can indicate motor overheating or electrical damage.', 'difficulty': 'professional', 'repair_guide': 'Stop using the mixer and unplug it. Have the motor and wiring inspected before further use.'},
+    {'category': 'mixer', 'symptom': 'mixer stops after running for a short time', 'verdict': 'repairable', 'reason': 'The thermal protection system may be activating because of overheating, overload, or motor problems.', 'difficulty': 'professional', 'repair_guide': 'Avoid overloading the jar and allow the appliance to cool. If the problem repeats, have it inspected.'},
+    {'category': 'mixer', 'symptom': 'mixer jar leaks from the bottom', 'verdict': 'repairable', 'reason': 'A worn seal or damaged jar assembly can cause leakage.', 'difficulty': 'professional', 'repair_guide': 'Stop using the leaking jar and replace the seal or jar assembly as appropriate.'},
+    {'category': 'mixer', 'symptom': 'mixer blades are not cutting properly', 'verdict': 'repairable', 'reason': 'Dull blades, a worn coupling, or a damaged blade assembly can reduce performance.', 'difficulty': 'professional', 'repair_guide': 'Inspect the blade assembly and coupling and replace worn parts if required.'},
+    {'category': 'mixer', 'symptom': 'mixer vibrates excessively during use', 'verdict': 'repairable', 'reason': 'An unbalanced jar, worn coupling, or mechanical problem can cause excessive vibration.', 'difficulty': 'professional', 'repair_guide': 'Check that the jar is seated correctly and have the coupling and blade assembly inspected.'},
+    {'category': 'mixer', 'symptom': 'mixer speed control works only at one setting', 'verdict': 'repairable', 'reason': 'The speed switch, control circuit, or internal wiring may be faulty.', 'difficulty': 'professional', 'repair_guide': 'Have the speed selector and control components tested.'},
+    {'category': 'mixer', 'symptom': 'mixer makes intermittent electrical sparking sounds', 'verdict': 'uncertain', 'reason': 'Electrical arcing can indicate a serious motor, switch, or wiring fault.', 'difficulty': 'professional', 'repair_guide': 'Stop using the appliance immediately and have it inspected by a qualified technician.'},
+    {'category': 'mixer', 'symptom': 'mixer is very old and the motor and jar assembly both need replacement', 'verdict': 'not_economical', 'reason': 'Replacing multiple major components on an old mixer may cost more than replacing the appliance.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'washing_machine', 'symptom': 'washing machine does not drain water after a cycle', 'verdict': 'repairable', 'reason': 'A blocked filter, drain hose, pump, or related component may prevent drainage.', 'difficulty': 'professional', 'repair_guide': 'Check the accessible drain filter and hose for blockages. If drainage remains faulty, have the pump inspected.'},
+    {'category': 'washing_machine', 'symptom': 'washing machine does not spin properly', 'verdict': 'repairable', 'reason': 'An unbalanced load, belt, motor, sensor, or control problem can prevent proper spinning.', 'difficulty': 'professional', 'repair_guide': 'Redistribute the load and check for obvious obstruction. Seek repair if the machine still fails to spin.'},
+    {'category': 'washing_machine', 'symptom': 'washing machine makes loud banging noises during spin', 'verdict': 'repairable', 'reason': 'An unbalanced load or worn suspension components can cause excessive movement and noise.', 'difficulty': 'diy', 'repair_guide': 'Check load balance and machine leveling. If the noise continues, have the suspension inspected.'},
+    {'category': 'washing_machine', 'symptom': 'washing machine is not filling with water', 'verdict': 'repairable', 'reason': 'The inlet valve, hose, filter, water supply, or control system may be responsible.', 'difficulty': 'professional', 'repair_guide': 'Check the water supply and inlet hose. Have the inlet valve and filters inspected if needed.'},
+    {'category': 'washing_machine', 'symptom': 'washing machine leaks water from the front', 'verdict': 'repairable', 'reason': 'A damaged door seal, blocked filter, or hose connection may cause leakage.', 'difficulty': 'professional', 'repair_guide': 'Stop the machine and inspect the door seal and accessible connections. Replace damaged parts.'},
+    {'category': 'washing_machine', 'symptom': 'washing machine door will not unlock after the cycle', 'verdict': 'repairable', 'reason': 'The door lock, control system, or remaining water in the drum can prevent unlocking.', 'difficulty': 'professional', 'repair_guide': 'Wait for the cycle to finish and check whether water remains. Do not force the door; seek service if it stays locked.'},
+    {'category': 'washing_machine', 'symptom': 'washing machine does not start at all', 'verdict': 'repairable', 'reason': 'Power supply, door lock, control board, or internal electrical faults may prevent startup.', 'difficulty': 'professional', 'repair_guide': 'Check the power connection and door closure. Have the electrical system diagnosed if the machine remains inactive.'},
+    {'category': 'washing_machine', 'symptom': 'washing machine detergent is not rinsing out properly', 'verdict': 'repairable', 'reason': 'A blocked dispenser, poor water flow, or incorrect detergent use can leave residue.', 'difficulty': 'diy', 'repair_guide': 'Clean the detergent drawer and check water flow. Use the recommended amount of detergent.'},
+    {'category': 'washing_machine', 'symptom': 'washing machine has a burning smell while running', 'verdict': 'uncertain', 'reason': 'A burning smell may indicate a motor, belt, wiring, or electrical problem that requires inspection.', 'difficulty': 'professional', 'repair_guide': 'Stop the machine and disconnect power. Do not continue operation until it has been checked.'},
+    {'category': 'washing_machine', 'symptom': 'washing machine is very old and has a failed motor plus damaged drum components', 'verdict': 'not_economical', 'reason': 'Multiple major mechanical repairs on an old machine can make replacement more practical.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'refrigerator', 'symptom': 'refrigerator is not cooling properly', 'verdict': 'repairable', 'reason': 'Cooling problems may be caused by airflow, thermostat, fan, condenser, or refrigeration-system faults.', 'difficulty': 'professional', 'repair_guide': 'Check that vents are not blocked and the door seals properly. Have the cooling system inspected if the issue continues.'},
+    {'category': 'refrigerator', 'symptom': 'refrigerator makes a loud unusual noise', 'verdict': 'repairable', 'reason': 'A noisy fan, compressor, loose component, or vibration can create unusual sounds.', 'difficulty': 'professional', 'repair_guide': 'Identify whether the sound comes from the fan, compressor, or cabinet and have the component inspected.'},
+    {'category': 'refrigerator', 'symptom': 'refrigerator has excessive ice buildup in the freezer', 'verdict': 'repairable', 'reason': 'A door seal, defrost system, or airflow problem can cause excessive frost.', 'difficulty': 'professional', 'repair_guide': 'Check the door seal and avoid blocking vents. If frost returns quickly, have the defrost system inspected.'},
+    {'category': 'refrigerator', 'symptom': 'refrigerator water is leaking inside the cabinet', 'verdict': 'repairable', 'reason': 'A blocked drain, drain pan issue, or defrost problem may cause water accumulation.', 'difficulty': 'professional', 'repair_guide': 'Check accessible drain areas for blockage and have the drainage system serviced if necessary.'},
+    {'category': 'refrigerator', 'symptom': 'refrigerator door does not seal properly', 'verdict': 'repairable', 'reason': 'A damaged gasket or misaligned door can allow warm air into the refrigerator.', 'difficulty': 'diy', 'repair_guide': 'Clean the gasket and check door alignment. Replace a damaged gasket if required.'},
+    {'category': 'refrigerator', 'symptom': 'refrigerator compressor runs continuously and cooling is weak', 'verdict': 'repairable', 'reason': 'Poor airflow, dirty condenser components, door leakage, or a refrigeration-system problem may cause continuous operation.', 'difficulty': 'professional', 'repair_guide': 'Ensure ventilation around the appliance and have the condenser and refrigeration system checked.'},
+    {'category': 'refrigerator', 'symptom': 'refrigerator light does not turn on but cooling works', 'verdict': 'repairable', 'reason': 'The bulb, LED module, door switch, or lighting circuit may be faulty.', 'difficulty': 'diy', 'repair_guide': 'Check the light module and door switch. Replace the failed component if accessible and appropriate.'},
+    {'category': 'refrigerator', 'symptom': 'refrigerator is not cooling and the compressor does not start', 'verdict': 'uncertain', 'reason': 'The cause may involve the thermostat, start components, control board, or compressor.', 'difficulty': 'professional', 'repair_guide': 'Avoid repeated power cycling and have the electrical and cooling system diagnosed.'},
+    {'category': 'refrigerator', 'symptom': 'refrigerator is very old and requires an expensive compressor replacement', 'verdict': 'not_economical', 'reason': 'A major compressor repair on an old refrigerator may not be economically worthwhile.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'refrigerator', 'symptom': 'refrigerator has a strong electrical burning smell', 'verdict': 'uncertain', 'reason': 'A burning electrical smell can indicate a serious wiring, compressor, or control problem.', 'difficulty': 'professional', 'repair_guide': 'Disconnect power if it is safe to do so and arrange professional inspection before using the appliance again.'},
+    {'category': 'other', 'symptom': 'electronic device was dropped and now does not turn on', 'verdict': 'uncertain', 'reason': 'Impact damage may affect internal connections, the power system, or other components and requires diagnosis.', 'difficulty': 'professional', 'repair_guide': 'Do not repeatedly attempt to power the device. Have it inspected for internal damage.'},
+    {'category': 'other', 'symptom': 'electronic device smells burnt and stopped working', 'verdict': 'uncertain', 'reason': 'A burnt smell may indicate electrical or component damage that cannot be safely diagnosed from symptoms alone.', 'difficulty': 'professional', 'repair_guide': 'Disconnect power and do not continue using the device until it has been professionally inspected.'},
+    {'category': 'other', 'symptom': 'device power cable is damaged but the device itself works', 'verdict': 'repairable', 'reason': 'A damaged power cable can often be replaced without replacing the entire device.', 'difficulty': 'professional', 'repair_guide': 'Stop using damaged cables and replace them with a compatible, safety-rated cable.'},
+    {'category': 'other', 'symptom': 'device works intermittently and sometimes loses power', 'verdict': 'repairable', 'reason': 'Loose connections, power components, switches, or internal faults can cause intermittent operation.', 'difficulty': 'professional', 'repair_guide': 'Check the external power connection and have the internal power path inspected if the issue continues.'},
+    {'category': 'other', 'symptom': 'device makes an unusual buzzing sound but still works', 'verdict': 'uncertain', 'reason': 'An unusual electrical or mechanical sound can have several causes and needs further inspection.', 'difficulty': 'professional', 'repair_guide': 'Stop using the device if the sound increases, and have the source of the noise checked.'},
+    {'category': 'other', 'symptom': 'device buttons do not respond consistently', 'verdict': 'repairable', 'reason': 'Worn switches, dirt, damaged contacts, or control hardware can cause inconsistent button operation.', 'difficulty': 'professional', 'repair_guide': 'Clean accessible controls gently and have the switch mechanism inspected if the problem remains.'},
+    {'category': 'other', 'symptom': 'device display is dim but the device still functions', 'verdict': 'repairable', 'reason': 'Backlight, display settings, power delivery, or display hardware may be responsible.', 'difficulty': 'professional', 'repair_guide': 'Check brightness and power settings first. If the display remains dim, have the display system inspected.'},
+    {'category': 'other', 'symptom': 'device gets unusually hot while operating normally', 'verdict': 'uncertain', 'reason': 'Excessive heat can result from blocked ventilation, component failure, or electrical problems.', 'difficulty': 'professional', 'repair_guide': 'Stop heavy use and ensure vents are clear. Seek professional inspection if overheating continues.'},
+    {'category': 'other', 'symptom': 'device has liquid damage but still works', 'verdict': 'uncertain', 'reason': 'Liquid can cause hidden corrosion and later failures even when the device initially works.', 'difficulty': 'professional', 'repair_guide': 'Power it off where possible, disconnect it from power, and have it inspected before continued use.'},
+    {'category': 'other', 'symptom': 'device charging port is loose but charging still works', 'verdict': 'repairable', 'reason': 'A loose port may worsen and eventually prevent reliable charging.', 'difficulty': 'professional', 'repair_guide': 'Avoid stressing the connector and have the charging port inspected or replaced.'},
+    {'category': 'other', 'symptom': 'device will not connect to Wi-Fi but other devices connect normally', 'verdict': 'repairable', 'reason': 'The issue may be caused by device settings, software, or the wireless hardware.', 'difficulty': 'diy', 'repair_guide': 'Restart the device and network settings first. If the issue persists, update software and have the wireless hardware checked.'},
+    {'category': 'other', 'symptom': 'device software freezes frequently but hardware appears normal', 'verdict': 'repairable', 'reason': 'Software corruption, storage problems, or outdated firmware can cause repeated freezing.', 'difficulty': 'diy', 'repair_guide': 'Update the software, free storage, and back up important data before considering a reset.'},
+    {'category': 'other', 'symptom': 'device has a broken plastic casing but functions normally', 'verdict': 'repairable', 'reason': 'Cosmetic or enclosure damage may be repairable without replacing the main electronics.', 'difficulty': 'professional', 'repair_guide': 'Have the casing assessed and repaired or replaced if structural protection is affected.'},
+    {'category': 'other', 'symptom': 'device power indicator works but the device does not respond', 'verdict': 'uncertain', 'reason': 'Power reaching the device does not confirm that its main electronics are functioning correctly.', 'difficulty': 'professional', 'repair_guide': 'Try a safe restart and check external connections. Seek diagnosis if it remains unresponsive.'},
+    {'category': 'other', 'symptom': 'device has a damaged battery that is swelling', 'verdict': 'uncertain', 'reason': 'A swollen battery is a safety concern and should not be treated as a normal repair symptom.', 'difficulty': 'professional', 'repair_guide': 'Stop using and charging the device. Keep it away from heat and arrange safe professional handling of the battery.'},
+    {'category': 'other', 'symptom': 'device is more than ten years old and has several unrelated faults', 'verdict': 'not_economical', 'reason': 'Multiple faults in a very old device can make repair costs and parts availability unfavorable compared with replacement.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'other', 'symptom': 'device is obsolete and replacement parts are no longer available', 'verdict': 'not_economical', 'reason': 'A repair may not be practical when essential replacement parts are unavailable.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'other', 'symptom': 'device has severe corrosion across multiple internal components', 'verdict': 'not_economical', 'reason': 'Extensive corrosion can affect multiple components and make reliable repair difficult or uneconomical.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'other', 'symptom': 'device has repeated major failures and previous repairs have not solved the problem', 'verdict': 'not_economical', 'reason': 'Repeated major failures can indicate that further repair may not provide good value compared with replacement.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'other', 'symptom': 'device is completely dead after a major electrical surge', 'verdict': 'uncertain', 'reason': 'A power surge can damage several internal components, and the extent of damage requires diagnosis.', 'difficulty': 'professional', 'repair_guide': 'Disconnect the device from power and have the power input and internal components assessed.'},
+    {'category': 'other', 'symptom': 'device works only when the power connector is held in a certain position', 'verdict': 'repairable', 'reason': 'A damaged connector, socket, or cable can cause intermittent power contact.', 'difficulty': 'professional', 'repair_guide': 'Avoid forcing the connector and have the power socket or cable inspected.'},
+    {'category': 'other', 'symptom': 'device has a cracked enclosure after a minor fall but all functions work', 'verdict': 'repairable', 'reason': 'If the electronics remain functional, enclosure damage can often be repaired or replaced.', 'difficulty': 'professional', 'repair_guide': 'Have the enclosure checked for structural damage and replace the damaged housing if necessary.'},
+    {'category': 'other', 'symptom': 'device suddenly shuts down when it becomes warm', 'verdict': 'repairable', 'reason': 'Thermal protection or a heat-related component problem may be causing shutdowns.', 'difficulty': 'professional', 'repair_guide': 'Keep ventilation clear and have the thermal system and internal components inspected.'},
+    {'category': 'other', 'symptom': 'device produces a faint electrical clicking sound when powered', 'verdict': 'uncertain', 'reason': 'Unusual electrical sounds can indicate a component or power-supply issue and require inspection.', 'difficulty': 'professional', 'repair_guide': 'Stop using the device if the sound is accompanied by heat, smell, or visible damage and seek professional inspection.'},
+    {'category': 'other', 'symptom': 'device has a loose internal connection after being dropped', 'verdict': 'repairable', 'reason': 'A disconnected or loose connector can sometimes be restored without replacing the entire device.', 'difficulty': 'professional', 'repair_guide': 'Have the device opened and internal connectors inspected by a qualified technician.'},
+    {'category': 'other', 'symptom': 'device battery no longer holds charge but the rest of the device works', 'verdict': 'repairable', 'reason': 'A degraded rechargeable battery can often be replaced independently of the main device.', 'difficulty': 'professional', 'repair_guide': 'Check whether the battery is user-replaceable; otherwise use a qualified repair service.'},
+    {'category': 'other', 'symptom': 'device has a cracked glass panel but all controls still work', 'verdict': 'repairable', 'reason': 'A damaged glass or display assembly can often be replaced while retaining the main electronics.', 'difficulty': 'professional', 'repair_guide': 'Back up important data and have the display or glass assembly assessed for replacement.'},
+    {'category': 'other', 'symptom': 'device cannot be repaired because its proprietary replacement component is discontinued', 'verdict': 'not_economical', 'reason': 'When a required proprietary component is no longer available, further repair may not be practical.', 'difficulty': '', 'repair_guide': ''},
+    {'category': 'other', 'symptom': 'device has minor cosmetic scratches but works normally', 'verdict': 'repairable', 'reason': 'The device does not appear to have a functional fault based on the reported symptom.', 'difficulty': 'diy', 'repair_guide': 'No functional repair may be necessary. Continue using the device if it remains safe and functional.'},
+]
+
 
 class Command(BaseCommand):
-    help = "Add initial common fault patterns for EcoRepair"
+    help = "Seed EcoRepair fault pattern data"
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **options):
+        self.stdout.write("Clearing existing fault patterns...")
+        FaultPattern.objects.all().delete()
 
-        faults = [
-            # ---------------- MOBILE ----------------
-            {
-                "category": "mobile",
-                "symptom": "my phone screen is cracked but the phone still turns on",
-                "verdict": "repairable",
-                "reason": "A cracked screen on a functioning phone is a common repair.",
-                "difficulty": "professional",
-                "repair_guide": "The screen or display assembly can usually be replaced by a repair professional.",
-            },
-            {
-                "category": "mobile",
-                "symptom": "my phone battery drains very quickly",
-                "verdict": "repairable",
-                "reason": "Rapid battery drain can often be addressed by replacing an aging battery or checking the device.",
-                "difficulty": "professional",
-                "repair_guide": "Have the battery and charging system checked by a repair professional.",
-            },
-            {
-                "category": "mobile",
-                "symptom": "my phone does not charge",
-                "verdict": "repairable",
-                "reason": "Charging problems are commonly caused by issues that can be inspected and repaired.",
-                "difficulty": "professional",
-                "repair_guide": "Check the charging cable and port first. If the problem continues, consult a repair professional.",
-            },
-
-            # ---------------- LAPTOP ----------------
-            {
-                "category": "laptop",
-                "symptom": "my laptop gets very hot and suddenly turns off",
-                "verdict": "repairable",
-                "reason": "Overheating and unexpected shutdowns are commonly repairable after checking the cooling system.",
-                "difficulty": "professional",
-                "repair_guide": "Have the cooling system, fan and ventilation checked and cleaned by a professional.",
-            },
-            {
-                "category": "laptop",
-                "symptom": "my laptop is extremely slow",
-                "verdict": "repairable",
-                "reason": "Slow performance can often be improved through maintenance, software cleanup or hardware upgrades.",
-                "difficulty": "professional",
-                "repair_guide": "Check storage usage, unnecessary software and available hardware upgrades.",
-            },
-            {
-                "category": "laptop",
-                "symptom": "my laptop screen is cracked but it still works",
-                "verdict": "repairable",
-                "reason": "A damaged laptop display can usually be replaced while the rest of the laptop remains usable.",
-                "difficulty": "professional",
-                "repair_guide": "A repair professional can inspect and replace the damaged display.",
-            },
-
-            # ---------------- FAN ----------------
-            {
-                "category": "fan",
-                "symptom": "my fan is not spinning",
-                "verdict": "repairable",
-                "reason": "A fan that does not spin may have a repairable electrical or mechanical issue.",
-                "difficulty": "professional",
-                "repair_guide": "Have the fan inspected by a repair professional before replacing it.",
-            },
-            {
-                "category": "fan",
-                "symptom": "my fan is making a strange noise",
-                "verdict": "repairable",
-                "reason": "Unusual fan noises can often be caused by dirt, loose parts or worn components.",
-                "difficulty": "professional",
-                "repair_guide": "Switch off the fan and have it inspected for loose or worn parts.",
-            },
-
-            # ---------------- MIXER / GRINDER ----------------
-            {
-                "category": "mixer",
-                "symptom": "my mixer is not starting",
-                "verdict": "repairable",
-                "reason": "A mixer that does not start may have a repairable electrical or mechanical problem.",
-                "difficulty": "professional",
-                "repair_guide": "Have the mixer inspected by a repair professional.",
-            },
-            {
-                "category": "mixer",
-                "symptom": "my mixer makes a noise but the blades are not moving",
-                "verdict": "repairable",
-                "reason": "The issue may be related to the blade mechanism or internal components and can often be repaired.",
-                "difficulty": "professional",
-                "repair_guide": "Avoid using the mixer and have the blade mechanism checked.",
-            },
-
-            # ---------------- WASHING MACHINE ----------------
-            {
-                "category": "washing_machine",
-                "symptom": "my washing machine is making a loud noise",
-                "verdict": "repairable",
-                "reason": "Unusual noise during washing or spinning is often caused by a repairable mechanical issue.",
-                "difficulty": "professional",
-                "repair_guide": "Stop using the machine if the noise is severe and have it inspected.",
-            },
-            {
-                "category": "washing_machine",
-                "symptom": "my washing machine is not draining water",
-                "verdict": "repairable",
-                "reason": "Drainage problems are commonly caused by blockages or components that can be serviced.",
-                "difficulty": "professional",
-                "repair_guide": "Check for obvious blockages and consult a repair professional if the issue continues.",
-            },
-
-            # ---------------- REFRIGERATOR ----------------
-            {
-                "category": "refrigerator",
-                "symptom": "my refrigerator is not cooling properly",
-                "verdict": "repairable",
-                "reason": "Cooling problems can have several causes and should be inspected before deciding to replace the refrigerator.",
-                "difficulty": "professional",
-                "repair_guide": "Have the refrigerator inspected by a qualified technician.",
-            },
-            {
-                "category": "refrigerator",
-                "symptom": "my refrigerator is making a strange noise",
-                "verdict": "repairable",
-                "reason": "Unusual refrigerator noises can come from components that may be repairable.",
-                "difficulty": "professional",
-                "repair_guide": "Have the source of the noise checked by a qualified technician.",
-            },
-
-            # ---------------- GENERAL / OTHER ----------------
-            {
-                "category": "other",
-                "symptom": "the device was dropped and now it does not work",
-                "verdict": "uncertain",
-                "reason": "Physical damage can affect different internal components, so the exact problem cannot be determined from the description alone.",
-                "difficulty": "professional",
-                "repair_guide": "Have the device inspected before deciding whether to repair or discard it.",
-            },
-            {
-                "category": "other",
-                "symptom": "the electronic device smells burnt and stopped working",
-                "verdict": "uncertain",
-                "reason": "A burning smell can indicate internal electrical damage and requires professional inspection.",
-                "difficulty": "professional",
-                "repair_guide": "Stop using the device and have it inspected by a qualified professional.",
-            },
-            {
-    "category": "mobile",
-    "symptom": "phone is completely dead and repair cost is very high",
-    "verdict": "not_economical",
-    "reason": "The device may require expensive internal repairs. Replacing it may be more practical than repairing it.",
-    "difficulty": "",
-    "repair_guide": "",
-},
-{
-    "category": "laptop",
-    "symptom": "laptop is very old and has multiple major problems",
-    "verdict": "not_economical",
-    "reason": "Multiple major faults in an old device can make repair more expensive than replacement.",
-    "difficulty": "",
-    "repair_guide": "",
-},
-{
-    "category": "refrigerator",
-    "symptom": "refrigerator is very old and major repair is extremely expensive",
-    "verdict": "not_economical",
-    "reason": "A major repair on an old refrigerator may not be economically worthwhile.",
-    "difficulty": "",
-    "repair_guide": "",
-},
-        ]
-
-        for fault in faults:
-            FaultPattern.objects.update_or_create(
-                category=fault["category"],
-                symptom=fault["symptom"],
-                defaults={
-                    "verdict": fault["verdict"],
-                    "reason": fault["reason"],
-                    "difficulty": fault["difficulty"],
-                    "repair_guide": fault["repair_guide"],
-                },
-            )
+        FaultPattern.objects.bulk_create(
+            [FaultPattern(**fault) for fault in FAULT_PATTERNS]
+        )
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Successfully added {len(faults)} fault patterns."
+                f"Successfully seeded {len(FAULT_PATTERNS)} fault patterns."
             )
         )

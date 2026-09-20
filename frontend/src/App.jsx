@@ -7,42 +7,37 @@ import {
   TileLayer,
   Marker,
   Popup,
-  useMap,
 } from "react-leaflet";
 
 function RepairMap({ center }) {
-  
   if (!center) return null;
 
   return (
-    <MapContainer
-      center={[center.latitude, center.longitude]}
-      zoom={13}
-      style={{
-  height: "350px",
-  width: "100%",
-  minHeight: "350px",
-  borderRadius: "18px",
-
-      }}
-    >
-      <TileLayer
-        attribution='&copy; OpenStreetMap contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-
-      <Marker
-        position={[center.latitude, center.longitude]}
+    <div className="repair-map-container">
+      <MapContainer
+        center={[center.latitude, center.longitude]}
+        zoom={13}
+        scrollWheelZoom={false}
+        className="repair-map"
       >
-        <Popup>
-          <strong>{center.name}</strong>
-          <br />
-          {center.address}
-          <br />
-          {center.distance_km} km away
-        </Popup>
-      </Marker>
-    </MapContainer>
+        <TileLayer
+          attribution='&copy; OpenStreetMap contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        <Marker
+          position={[center.latitude, center.longitude]}
+        >
+          <Popup>
+            <strong>{center.name}</strong>
+            <br />
+            {center.address}
+            <br />
+            {center.distance_km} km away
+          </Popup>
+        </Marker>
+      </MapContainer>
+    </div>
   );
 }
 

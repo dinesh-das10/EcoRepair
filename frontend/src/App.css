@@ -984,20 +984,19 @@ footer p {
   font-size: 14px;
 }
 
-.map-wrapper {
-  margin-top: 28px;
+.repair-map-container {
   width: 100%;
-  min-height: 420px;
-  overflow: hidden;
+  height: 420px;
+  margin-top: 28px;
   border-radius: 20px;
-  background: #e9efeb;
+  overflow: hidden;
 }
 
-.map-wrapper .leaflet-container {
-  height: 420px !important;
+.repair-map {
   width: 100%;
-  border-radius: 20px;
+  height: 100%;
 }
+
 
 .result-content {
   flex: 1;
