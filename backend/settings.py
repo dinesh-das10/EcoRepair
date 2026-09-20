@@ -134,3 +134,6 @@ MAILERS = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
+
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
