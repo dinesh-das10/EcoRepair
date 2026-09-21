@@ -6,7 +6,7 @@ EcoRepair is a web application that helps users decide whether a faulty electron
 
 ## 🚀 Live Demo
 
-[Open EcoRepair](https://ecorepair-frontend.onrender.com)
+[Open EcoRepair](https://eco-repair.vercel.app/)
 
 ### How it works
 
