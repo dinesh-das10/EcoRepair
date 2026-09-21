@@ -160,15 +160,32 @@ const findEwasteCenter = async () => {
 
       {/* NAVBAR */}
       <nav className="navbar">
-        <div className="logo">
-          <div className="logo-icon">♻</div>
-          <span>EcoRepair</span>
-        </div>
+        <div
+  className="logo"
+  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+>
+  <div className="logo-icon">♻</div>
+  <span>EcoRepair</span>
+</div>
 
         <div className="nav-links">
           <a href="#how">How it works</a>
           <a href="#impact">Our impact</a>
-          <button className="nav-button">Get Started</button>
+          <button
+  className="nav-button"
+  onClick={() => {
+    const checker = document.getElementById("checker");
+
+    if (checker) {
+      window.scrollTo({
+        top: checker.offsetTop - 80,
+        behavior: "smooth",
+      });
+    }
+  }}
+>
+  Get Started
+</button>
         </div>
       </nav>
 
@@ -547,38 +564,49 @@ const findEwasteCenter = async () => {
         </section>
 
         {/* IMPACT */}
-        <section
-          className="impact-section"
-          id="impact"
-        >
 
-          <div className="impact-character">
-            <div className="tiny-device">
-              <div className="tiny-face">
-                ◡ ◡
-              </div>
-            </div>
-          </div>
+<section className="impact-section" id="impact">
+  <div className="impact-character">
+    <div className="tiny-device">
+      <div className="tiny-face">◡ ◡</div>
+    </div>
+  </div>
 
-          <div>
-            <div className="section-tag">
-              03 / WHY IT MATTERS
-            </div>
+  <div className="impact-content">
+    <div className="section-tag">03 / WHY IT MATTERS</div>
 
-            <h2>
-              Every repair
-              <br />
-              keeps waste <span>away.</span>
-            </h2>
+    <h2>
+      Every repair
+      <br />
+      keeps waste <span>away.</span>
+    </h2>
 
-            <p>
-              Electronics don't always need to be replaced
-              when something stops working. EcoRepair encourages
-              informed repair decisions and responsible e-waste disposal.
-            </p>
-          </div>
+    <p>
+      A broken device doesn't always belong in the trash.
+      Repairing what still has life means fewer electronics
+      becoming waste — and fewer new devices needing to be made.
+    </p>
 
-        </section>
+    <div className="impact-points">
+      <div className="impact-point">
+        <span>🔧</span>
+        <div>
+          <strong>Repair first</strong>
+          <small>Extend the life of devices that can still be fixed.</small>
+        </div>
+      </div>
+
+      <div className="impact-point">
+        <span>♻️</span>
+        <div>
+          <strong>Dispose responsibly</strong>
+          <small>Keep unusable electronics out of regular waste.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
       </main>
 
       {/* FOOTER */}
