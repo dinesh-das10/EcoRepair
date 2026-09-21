@@ -4,9 +4,11 @@ from collection.services import find_nearest_center
 
 def process_item(category, description, latitude=None, longitude=None):
     repair_result = check_repairability(
-        category,
-        description
-    )
+    category,
+    description,
+    latitude,
+    longitude
+)
 
     # If the item is not economical to repair,
     # find a suitable e-waste collection center.

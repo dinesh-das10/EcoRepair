@@ -1,0 +1,147 @@
+[
+  {
+    "id": "laptop_overheating",
+    "category": "laptop",
+    "problem": "Laptop becomes very hot and may suddenly shut down during gaming, heavy applications, or prolonged use.",
+    "possible_causes": [
+      "Dust blocking ventilation",
+      "Cooling fan failure",
+      "Thermal paste degradation",
+      "High CPU or GPU temperature"
+    ],
+    "diagnostic_clues": [
+      "Fan becomes unusually loud",
+      "Laptop shuts down when under heavy load",
+      "Device becomes hot around the keyboard or exhaust vents"
+    ],
+    "repairability": "usually_repairable",
+    "difficulty": "professional",
+    "repair_guidance": "Clean the ventilation system and check the cooling fan. If temperatures remain high, professional servicing and thermal paste replacement may be required.",
+    "safety": "Do not open or service the laptop while it is powered on."
+  },
+  {
+    "id": "laptop_not_charging",
+    "category": "laptop",
+    "problem": "Laptop does not charge, charges intermittently, or only works when the charger is connected.",
+    "possible_causes": [
+      "Damaged charging cable",
+      "Faulty power adapter",
+      "Damaged charging port",
+      "Battery degradation",
+      "Charging circuit failure"
+    ],
+    "diagnostic_clues": [
+      "Charging indicator does not appear",
+      "Battery percentage does not increase",
+      "Laptop turns off when the charger is removed"
+    ],
+    "repairability": "usually_repairable",
+    "difficulty": "professional",
+    "repair_guidance": "Check the charger and charging port first. If the adapter is working correctly, the battery or charging circuit may require professional diagnosis.",
+    "safety": "Do not attempt electrical repairs without appropriate experience."
+  },
+  {
+    "id": "mobile_battery_drain",
+    "category": "mobile",
+    "problem": "Phone battery drains unusually quickly even with normal usage.",
+    "possible_causes": [
+      "Battery degradation",
+      "Background applications",
+      "High screen brightness",
+      "Software problems",
+      "Battery-consuming applications"
+    ],
+    "diagnostic_clues": [
+      "Battery percentage drops rapidly",
+      "Phone becomes warm during normal use",
+      "Battery life has become significantly shorter over time"
+    ],
+    "repairability": "usually_repairable",
+    "difficulty": "professional",
+    "repair_guidance": "Check battery usage statistics and background applications. If the battery has degraded significantly, replacement may be appropriate.",
+    "safety": "Do not puncture, bend, or physically damage the battery."
+  },
+  {
+    "id": "mobile_not_charging",
+    "category": "mobile",
+    "problem": "Phone does not charge or charging repeatedly connects and disconnects.",
+    "possible_causes": [
+      "Damaged charging cable",
+      "Faulty charger",
+      "Dust or debris in charging port",
+      "Damaged charging port",
+      "Battery or charging circuit failure"
+    ],
+    "diagnostic_clues": [
+      "Charging starts and stops repeatedly",
+      "Cable only works at a certain angle",
+      "No charging indicator appears"
+    ],
+    "repairability": "usually_repairable",
+    "difficulty": "professional",
+    "repair_guidance": "Try a known-good charger and cable. Inspect the charging port for visible debris. If the problem continues, professional inspection is recommended.",
+    "safety": "Do not insert sharp metal objects into the charging port."
+  },
+  {
+    "id": "fan_not_working",
+    "category": "fan",
+    "problem": "Electric fan does not start, rotates slowly, or stops unexpectedly.",
+    "possible_causes": [
+      "Motor problem",
+      "Capacitor failure",
+      "Dust accumulation",
+      "Wiring problem",
+      "Mechanical obstruction"
+    ],
+    "diagnostic_clues": [
+      "Fan hums but does not rotate",
+      "Fan rotates slowly",
+      "Fan stops after running for some time"
+    ],
+    "repairability": "usually_repairable",
+    "difficulty": "professional",
+    "repair_guidance": "The problem may involve the capacitor, motor, wiring, or mechanical components. Professional electrical inspection is recommended.",
+    "safety": "Disconnect the fan from mains power before any inspection."
+  },
+  {
+    "id": "washing_machine_not_draining",
+    "category": "washing_machine",
+    "problem": "Washing machine completes washing but does not drain the water.",
+    "possible_causes": [
+      "Blocked drain filter",
+      "Blocked drain hose",
+      "Drain pump failure",
+      "Foreign object obstruction"
+    ],
+    "diagnostic_clues": [
+      "Water remains inside the drum",
+      "Machine makes unusual sounds during draining",
+      "Drain cycle takes unusually long"
+    ],
+    "repairability": "usually_repairable",
+    "difficulty": "professional",
+    "repair_guidance": "Check the drain hose and accessible filter for blockage. If the pump does not operate correctly, professional repair may be required.",
+    "safety": "Disconnect the appliance from power before inspecting accessible components."
+  },
+  {
+    "id": "refrigerator_not_cooling",
+    "category": "refrigerator",
+    "problem": "Refrigerator is running but is not cooling food properly.",
+    "possible_causes": [
+      "Blocked airflow",
+      "Dirty condenser",
+      "Faulty thermostat",
+      "Fan problem",
+      "Refrigerant or compressor issue"
+    ],
+    "diagnostic_clues": [
+      "Interior temperature is higher than normal",
+      "Compressor runs continuously",
+      "Freezer or refrigerator compartment is not reaching normal temperature"
+    ],
+    "repairability": "usually_repairable",
+    "difficulty": "professional",
+    "repair_guidance": "Check airflow and accessible ventilation areas. Compressor, refrigerant, and sealed-system problems require professional service.",
+    "safety": "Do not attempt to handle refrigerant yourself."
+  }
+]
