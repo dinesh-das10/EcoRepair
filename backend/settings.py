@@ -133,7 +133,7 @@ MAILERS = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://ecorepair-frontend.onrender.com",
+     "https://eco-repair.vercel.app",
 ]
 
 STATIC_URL = "static/"
